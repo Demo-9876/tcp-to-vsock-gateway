@@ -375,7 +375,7 @@ func (c *conn) wait(events int16, deadline func() time.Time) error {
 			return errno
 		}
 		if n == 0 {
-			if !currentDeadline.IsZero() {
+			if !currentDeadline.IsZero() && timeUntil(currentDeadline) <= 0 {
 				return os.ErrDeadlineExceeded
 			}
 			continue

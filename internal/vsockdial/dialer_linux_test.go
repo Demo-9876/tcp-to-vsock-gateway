@@ -50,6 +50,53 @@ func TestConnReadUsesUpdatedDeadline(t *testing.T) {
 	}
 }
 
+func TestConnReadWaitsPastPollCapUntilDeadline(t *testing.T) {
+	fds, err := syscall.Socketpair(syscall.AF_UNIX, syscall.SOCK_STREAM|syscall.SOCK_CLOEXEC|syscall.SOCK_NONBLOCK, 0)
+	if err != nil {
+		t.Fatalf("socketpair: %v", err)
+	}
+	defer syscall.Close(fds[1])
+
+	c, err := newConn(fds[0], 4, 5005)
+	if err != nil {
+		t.Fatalf("newConn: %v", err)
+	}
+	defer c.Close()
+
+	if err := c.SetReadDeadline(time.Now().Add(2 * time.Second)); err != nil {
+		t.Fatalf("SetReadDeadline: %v", err)
+	}
+
+	done := make(chan error, 1)
+	go func() {
+		var b [1]byte
+		n, err := c.Read(b[:])
+		if err != nil {
+			done <- err
+			return
+		}
+		if n != 1 || b[0] != 'x' {
+			done <- errors.New("unexpected read payload")
+			return
+		}
+		done <- nil
+	}()
+
+	time.Sleep(1200 * time.Millisecond)
+	if _, err := syscall.Write(fds[1], []byte{'x'}); err != nil {
+		t.Fatalf("write peer: %v", err)
+	}
+
+	select {
+	case err := <-done:
+		if err != nil {
+			t.Fatalf("Read error = %v, want payload before deadline", err)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("Read did not return payload before deadline")
+	}
+}
+
 func TestConnDeadlineSettersRaceWithClose(t *testing.T) {
 	fds, err := syscall.Socketpair(syscall.AF_UNIX, syscall.SOCK_STREAM|syscall.SOCK_CLOEXEC|syscall.SOCK_NONBLOCK, 0)
 	if err != nil {
