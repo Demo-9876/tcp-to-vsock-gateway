@@ -1,0 +1,38 @@
+package config
+
+func DefaultAllowedTargets() []string {
+	return []string{
+		"api.openai.com:443",
+		"api.anthropic.com:443",
+		"generativelanguage.googleapis.com:443",
+		"aiplatform.googleapis.com:443",
+		"api.mistral.ai:443",
+		"api.cohere.ai:443",
+		"api.together.xyz:443",
+		"openrouter.ai:443",
+		"api.deepseek.com:443",
+		"api.x.ai:443",
+		"api.groq.com:443",
+		"api.perplexity.ai:443",
+		"api.fireworks.ai:443",
+		"api.replicate.com:443",
+		"api.novita.ai:443",
+		"api.sambanova.ai:443",
+		"api.ai21.com:443",
+		"api.cerebras.ai:443",
+		"api-inference.huggingface.co:443",
+		"router.huggingface.co:443",
+		"dashscope.aliyuncs.com:443",
+		"ark.cn-beijing.volces.com:443",
+		"ark.cn-shanghai.volces.com:443",
+		"open.bigmodel.cn:443",
+		"api.moonshot.cn:443",
+		"api.minimax.chat:443",
+		"api.stepfun.com:443",
+		"api.baichuan-ai.com:443",
+		"api.lingyiwanwu.com:443",
+		"api.siliconflow.cn:443",
+		"hunyuan.tencentcloudapi.com:443",
+		"qianfan.baidubce.com:443",
+	}
+}
