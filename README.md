@@ -22,6 +22,9 @@ for the full production deployment design.
 For concrete commands on a real Enclave parent VM, see
 [docs/parent-vm-deployment-runbook.md](docs/parent-vm-deployment-runbook.md).
 
+For PoO Parent Gateway deployment with per-request proxy egress, see
+[docs/poo-parent-gateway-deployment.md](docs/poo-parent-gateway-deployment.md).
+
 ## Build
 
 ```bash
