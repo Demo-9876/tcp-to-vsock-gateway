@@ -68,7 +68,7 @@ func (l *listener) Accept() (net.Conn, error) {
 		if l.closed.Load() {
 			return nil, net.ErrClosed
 		}
-		nfd, _, err := syscall.Accept4(l.fd, syscall.SOCK_CLOEXEC|syscall.SOCK_NONBLOCK)
+		nfd, err := acceptNoSockaddr(l.fd, syscall.SOCK_CLOEXEC|syscall.SOCK_NONBLOCK)
 		if err == nil {
 			c, err := newConn(nfd, 0, l.addr.port)
 			if err != nil {
@@ -91,6 +91,14 @@ func (l *listener) Accept() (net.Conn, error) {
 			return nil, err
 		}
 	}
+}
+
+func acceptNoSockaddr(fd int, flags int) (int, error) {
+	r0, _, errno := syscall.Syscall6(syscall.SYS_ACCEPT4, uintptr(fd), 0, 0, uintptr(flags), 0, 0)
+	if errno != 0 {
+		return 0, errno
+	}
+	return int(r0), nil
 }
 
 func (l *listener) Close() error {
